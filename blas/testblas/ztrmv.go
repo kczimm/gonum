@@ -54,6 +54,7 @@ func ZtrmvTest(t *testing.T, impl Ztrmver) {
 				8 - 1i,
 				-7 + 9i,
 			},
+
 			want: []complex128{
 				48 - 121i,
 				-152 + 62i,
@@ -90,6 +91,7 @@ func ZtrmvTest(t *testing.T, impl Ztrmver) {
 				208 - 91i,
 				-114 - 2i,
 			},
+
 			wantUnit: []complex128{
 				38 - 16i,
 				-124 + 66i,
@@ -127,10 +129,99 @@ func ZtrmvTest(t *testing.T, impl Ztrmver) {
 				-7 + 9i,
 			},
 		},
+		{
+			uplo: blas.Lower,
+			a: []complex128{
+				10 - 8i, nan, nan, nan,
+				1 - 6i, -4 + 8i, nan, nan,
+				2 - 6i, 4 - 8i, 5 + 3i, nan,
+				-7 - 4i, 1 + 3i, -2 - 4i, 9 + 8i,
+			},
+			x: []complex128{
+				10 + 5i,
+				-7 + 1i,
+				3 - 1i,
+				9 + 10i,
+			},
+
+			want: []complex128{
+				140 - 30i,
+				60 - 115i,
+				48 + 14i,
+				-69 + 57i,
+			},
+			wantNeg: []complex128{
+				51 + 53i,
+				44 - 78i,
+				65 - 16i,
+				170 + 28i,
+			},
+			wantTrans: []complex128{
+				116 - 113i,
+				3 - 51i,
+				40 - 52i,
+				1 + 162i,
+			},
+			wantTransNeg: []complex128{
+				50 + 125i,
+				-38 - 66i,
+				-29 + 123i,
+				109 - 22i,
+			},
+			wantConjTrans: []complex128{
+				-44 + 71i,
+				95 + 55i,
+				-46 + 2i,
+				161 + 18i,
+			},
+			wantConjTransNeg: []complex128{
+				130 - 35i,
+				-72 + 56i,
+				-31 - 97i,
+				-91 + 154i,
+			},
+
+			wantUnit: []complex128{
+				10 + 5i,
+				33 - 54i,
+				33 + 9i,
+				-61 - 95i,
+			},
+			wantUnitNeg: []complex128{
+				11 - 67i,
+				75 - 61i,
+				72 - 45i,
+				9 + 10i,
+			},
+			wantUnitTrans: []complex128{
+				-14 - 78i,
+				-24 + 10i,
+				25 - 57i,
+				9 + 10i,
+			},
+			wantUnitTransNeg: []complex128{
+				10 + 5i,
+				-7 - 49i,
+				-22 + 94i,
+				-52 - 40i,
+			},
+			wantUnitConjTrans: []complex128{
+				-94 - 54i,
+				52 + 4i,
+				-55 + 15i,
+				9 + 10i,
+			},
+			wantUnitConjTransNeg: []complex128{
+				10 + 5i,
+				-47 + 31i,
+				-8 - 78i,
+				-92 - 8i,
+			},
+		},
 	} {
 		n := len(test.x)
 		uplo := test.uplo
-		for _, diag := range []blas.Diag{blas.Unit, blas.NonUnit} {
+		for _, diag := range []blas.Diag{blas.NonUnit, blas.Unit} {
 			for _, trans := range []blas.Transpose{blas.NoTrans, blas.Trans, blas.ConjTrans} {
 				if trans != blas.NoTrans {
 					continue
