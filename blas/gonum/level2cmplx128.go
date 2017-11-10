@@ -611,7 +611,7 @@ func (Implementation) Ztrmv(uplo blas.Uplo, trans blas.Transpose, diag blas.Diag
 			if diag == blas.NonUnit {
 				if incX == 1 {
 					for i := n - 1; i >= 0; i-- {
-						x[i] = c128.DotuUnitary(a[i*lda:i*lda+n], x[i:n])
+						x[i] = c128.DotuUnitary(a[i*lda:i*lda+i+1], x[:i+1])
 					}
 				} else {
 					ix := kx + (n-1)*incX
@@ -622,12 +622,12 @@ func (Implementation) Ztrmv(uplo blas.Uplo, trans blas.Transpose, diag blas.Diag
 				}
 			} else {
 				if incX == 1 {
-					for i := n - 2; i >= 0; i-- {
-						x[i] += c128.DotuUnitary(a[i*lda+1:i*lda+n], x[i+1:n])
+					for i := n - 1; i >= 1; i-- {
+						x[i] += c128.DotuUnitary(a[i*lda:i*lda+i], x[:i])
 					}
 				} else {
 					ix := kx + (n-2)*incX
-					for i := n - 2; i <= 0; i-- {
+					for i := n - 1; i >= 1; i-- {
 						x[ix] += c128.DotuInc(a[i*lda+1:i*lda+n], x, uintptr(n-i-1), 1, uintptr(incX), 0, uintptr(ix))
 						ix -= incX
 					}
