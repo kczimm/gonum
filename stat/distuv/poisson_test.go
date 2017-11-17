@@ -6,8 +6,8 @@ package distuv
 
 import (
 	"math/rand"
-	"testing"
 	"sort"
+	"testing"
 
 	"gonum.org/v1/gonum/floats"
 )
