@@ -42,7 +42,7 @@ func (p Poisson) ExKurtosis() float64 {
 // LogProb computes the natural logarithm of the value of the probability
 // density function at x.
 func (p Poisson) LogProb(x float64) float64 {
-	if x < 0 {
+	if x < 0 || math.Floor(x) != x {
 		return math.Inf(-1)
 	}
 	lg, _ := math.Lgamma(math.Floor(x) + 1)
