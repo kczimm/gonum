@@ -30,8 +30,8 @@ func (p Poisson) CDF(x float64) float64 {
 	if x < 0 {
 		return 0
 	}
-	fx := math.Floor(x) + 1
-	return mathext.GammaInc(fx, p.Lambda) / fx
+	fx1 := math.Floor(x + 1)
+	return mathext.GammaIncComp(fx1, p.Lambda)
 }
 
 // ExKurtosis returns the excess kurtosis of the distribution.
@@ -61,6 +61,9 @@ func (Poisson) NumParameters() int {
 
 // Prob computes the value of the probability density function at x.
 func (p Poisson) Prob(x float64) float64 {
+	if math.Floor(x) != x {
+		return 0;
+	}
 	return math.Exp(p.LogProb(x))
 }
 
