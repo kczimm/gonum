@@ -110,16 +110,12 @@ func TestPoisson(t *testing.T) {
 
 func testPoisson(t *testing.T, p Poisson, i int) {
 	tol := 1e-2
-	const n = 1e5
-	const bins = 50
+	const n = 1e6
 	x := make([]float64, n)
 	generateSamples(x, p)
 	sort.Float64s(x)
 
-	testRandLogProbContinuous(t, i, 0, x, p, tol, bins)
 	checkMean(t, i, x, p, tol)
 	checkVarAndStd(t, i, x, p, tol)
 	checkExKurtosis(t, i, x, p, 7e-2)
-	checkProbContinuous(t, i, x, p, 1e-3)
-//	checkQuantileCDFSurvival(t, i, x, p, 1e-2)
 }
