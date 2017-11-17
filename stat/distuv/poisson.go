@@ -62,7 +62,7 @@ func (Poisson) NumParameters() int {
 // Prob computes the value of the probability density function at x.
 func (p Poisson) Prob(x float64) float64 {
 	if math.Floor(x) != x {
-		return 0;
+		return 0
 	}
 	return math.Exp(p.LogProb(x))
 }

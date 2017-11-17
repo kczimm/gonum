@@ -5,13 +5,15 @@
 package distuv
 
 import (
+	"math/rand"
 	"testing"
+	"sort"
 
 	"gonum.org/v1/gonum/floats"
 )
 
-func TestPoisson(t *testing.T) {
-	const tol = 1e-16
+func TestPoissonProb(t *testing.T) {
+	const tol = 1e-10
 	for i, tt := range []struct {
 		k    float64
 		l    float64
@@ -39,7 +41,7 @@ func TestPoisson(t *testing.T) {
 		{8, 2.5, 3.106442656740263e-03},
 		{9, 2.5, 8.629007379834082e-04},
 
-                {0.5, 2.5, 0},
+		{0.5, 2.5, 0},
 		{1.5, 2.5, 0},
 		{2.5, 2.5, 0},
 		{3.5, 2.5, 0},
@@ -49,7 +51,6 @@ func TestPoisson(t *testing.T) {
 		{7.5, 2.5, 0},
 		{8.5, 2.5, 0},
 		{9.5, 2.5, 0},
-
 	} {
 		p := Poisson{Lambda: tt.l}
 		got := p.Prob(tt.k)
@@ -57,7 +58,10 @@ func TestPoisson(t *testing.T) {
 			t.Errorf("test-%d: got=%e. want=%e\n", i, got, tt.want)
 		}
 	}
+}
 
+func TestPoissonCDF(t *testing.T) {
+	const tol = 1e-10
 	for i, tt := range []struct {
 		k    float64
 		l    float64
@@ -91,5 +95,31 @@ func TestPoisson(t *testing.T) {
 			t.Errorf("test-%d: got=%e. want=%e\n", i, got, tt.want)
 		}
 	}
+}
 
+func TestPoisson(t *testing.T) {
+	src := rand.New(rand.NewSource(1))
+	for i, b := range []Poisson{
+		{3, src},
+		{1.5, src},
+		{0.9, src},
+	} {
+		testPoisson(t, b, i)
+	}
+}
+
+func testPoisson(t *testing.T, p Poisson, i int) {
+	tol := 1e-2
+	const n = 1e5
+	const bins = 50
+	x := make([]float64, n)
+	generateSamples(x, p)
+	sort.Float64s(x)
+
+	testRandLogProbContinuous(t, i, 0, x, p, tol, bins)
+	checkMean(t, i, x, p, tol)
+	checkVarAndStd(t, i, x, p, tol)
+	checkExKurtosis(t, i, x, p, 7e-2)
+	checkProbContinuous(t, i, x, p, 1e-3)
+//	checkQuantileCDFSurvival(t, i, x, p, 1e-2)
 }
