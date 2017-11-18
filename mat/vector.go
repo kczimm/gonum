@@ -325,6 +325,25 @@ func (v *VecDense) DivElemVec(a, b *VecDense) {
 	}
 }
 
+// DiagonalOf stores the diagnonal elements of the Matrix m into the receiver.
+func (v *VecDense) DiagonalOf(m Matrix) {
+	r, c := m.Dims()
+
+	var z int
+	// let z be the mininum of r and c
+	if r < c {
+		z = r
+	} else {
+		z = c
+	}
+
+	v.reuseAs(z)
+
+	for i := 0; i < z; i++ {
+		v.At(i, 0) = m.At(i, i)
+	}
+}
+
 // MulVec computes a * b. The result is stored into the receiver.
 // MulVec panics if the number of columns in a does not equal the number of rows in b.
 func (v *VecDense) MulVec(a Matrix, b *VecDense) {

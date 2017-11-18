@@ -180,6 +180,24 @@ func TestVecDenseAtSet(t *testing.T) {
 	}
 }
 
+func TestVecDenseDiagonalOf(t *testing.T) {
+	for i, test := range []struct {
+		m    Matrix
+		want *VecDense
+	}{
+		{
+			m:    NewDense(1, []float64{1}),
+			want: NewVecDense(1, []float64{1}),
+		},
+	} {
+		var v VecDense
+		v.DiagonalOf(test.m)
+		if !reflect.DeepEqual(v.RawVector(), test.want.RawVector()) {
+			t.Errorf("test %d: unexpected result for v = alpha * v: got: %v want: %v", i, v.RawVector(), test.want.RawVector())
+		}
+	}
+}
+
 func TestVecDenseMul(t *testing.T) {
 	method := func(receiver, a, b Matrix) {
 		type mulVecer interface {
