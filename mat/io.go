@@ -6,6 +6,7 @@ package mat
 
 import (
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"io"
 	"math"
@@ -96,6 +97,25 @@ func (m Dense) MarshalBinaryTo(w io.Writer) (int, error) {
 	return n, nil
 }
 
+type MatrixJSON struct {
+	Rows int       `json:"rows"`
+	Cols int       `json:"cols"`
+	Data []float64 `json:"data"`
+}
+
+// MarshalText encodes the receiver into a text form and returns the result.
+func (m Dense) MarshalText() ([]byte, error) {
+	r, c := m.Dims()
+
+	mJson := MatrixJSON{r, c, m.RawMatrix().Data}
+
+	buf, err := json.Marshal(mJson)
+	if err != nil {
+		return nil, err
+	}
+	return buf, nil
+}
+
 // UnmarshalBinary decodes the binary form into the receiver.
 // It panics if the receiver is a non-zero Dense matrix.
 //
@@ -139,6 +159,26 @@ func (m *Dense) UnmarshalBinary(data []byte) error {
 	for i := range m.mat.Data {
 		m.mat.Data[i] = math.Float64frombits(binary.LittleEndian.Uint64(data[p : p+sizeFloat64]))
 		p += sizeFloat64
+	}
+
+	return nil
+}
+
+// UnmarshalText decodes the text form into receiver.
+func (m *Dense) UnmarshalText(text []byte) error {
+	var elems map[string]interface{}
+
+	if err := json.Unmarshal(text, &elems); err != nil {
+		panic(err)
+	}
+
+	r := elems["rows"].(float64)
+	c := elems["cols"].(float64)
+	data := elems["data"].([]interface{})
+	m.reuseAs(int(r), int(c))
+
+	for i, d := range data {
+		m.mat.Data[i] = d.(float64)
 	}
 
 	return nil
